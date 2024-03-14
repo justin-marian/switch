@@ -56,7 +56,7 @@ int send_to_link(int intidx, char *frame_data, size_t len)
 ssize_t receive_from_link(int intidx, char *frame_data)
 {
 	ssize_t ret;
-  ret = read(interfaces[intidx], frame_data, MAX_PACKET_LEN);
+  	ret = read(interfaces[intidx], frame_data, MAX_PACKET_LEN);
 	return ret;
 }
 
@@ -124,8 +124,8 @@ char *get_interface_name(int interface)
 	}
 
   ifr.ifr_ifindex = interface + 2;
-	ret = ioctl(interfaces[interface], SIOCGIFNAME, &ifr);
-	DIE(ret == -1, "ioctl SIOCGIFNAME");
+  ret = ioctl(interfaces[interface], SIOCGIFNAME, &ifr);
+  DIE(ret == -1, "ioctl SIOCGIFNAME");
   char *int_name = malloc(256);
   strncpy(int_name, ifr.ifr_name, 256);
   return int_name;
