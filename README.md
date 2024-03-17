@@ -3,16 +3,16 @@
 Ethernet switch that uses **VLAN segmentation** for network efficiency, **Spanning Tree Protocol (STP)** for loop prevention, and **MAC address** learning for fast frame forwarding. By  managing VLAN membership, preventing loops, and learning MAC addresses, the implementation ensures reliable communication and facilitates network segmentation for enhanced performance.
 
 <p align="center">
-    <img src="./images/topo.png" alt="TOPO" width="50%">
+    <img src="./images/topo.png" alt="TOPO" width="65%">
 </p>
 
 ## Frame Forwarding Process
 
 - **Frame Arrival:** An Ethernet frame arrives at a switch through one of its ports.
-- **Destination MAC Address Lookup:** The switch examines the destination MAC address (dst) in the header.
+- **Destination MAC Address:** The switch examines the destination MAC address (dst) in the header frame.
 - **MAC Address Table Lookup:** The switch checks its MAC address table to find the port associated with the destination MAC address. If found, the frame is forwarded out of the corresponding port.
-- **Unknown Destination MAC Address Handling:** If the MAC address is unknown, the switch floods the frame to all ports except the incoming one to ensure connectivity.
-- **Broadcast and Multicast Forwarding:**
+- **Unknown Destination MAC Address:** If the MAC address is unknown, the switch floods the frame to all ports except the incoming one to ensure connectivity.
+- **Broadcast and Multicast:**
   - `Broadcast` frames are forwarded to **all** ports except the receiving one, all devices receive the broadcast.
   - `Multicast` frames are forwarded **only** to ports interested in the multicast group.
 
@@ -21,21 +21,23 @@ Ethernet switch that uses **VLAN segmentation** for network efficiency, **Spanni
 VLANs (Virtual Local Area Networks) segment a single physical LAN into multiple broadcast domains. This implementation introduces VLAN tagging and forwards frames based on VLAN membership, facilitating efficient network segmentation and traffic management.
 
 <p align="center">
-    <img src="./images/ethernet_802.png" alt="ETHERNET_802" width="50%">
+    <img src="./images/ethernet_802.png" alt="ETHERNET_802" width="75%">
 </p>
 
 ### VLAN Forwarding Process
 
 - **Frame Reception:** When a switch receives a frame with an unknown destination or broadcast, it forwards it to all ports within the same VLAN, including trunks.
 - **IEEE 802.1Q VLAN Tagging:** VLAN tagging is introduced using IEEE 802.1Q, adding 4 bytes to the frame. The VID field (12 bits) represents the VLAN identifier.
-- **Switch Behavior:**
-  - If on an access port:
-    - Forwards with 802.1Q header on trunk interfaces.
-    - Forwards without header if VLAN ID matches that of the incoming interface.
-  - If on a trunk port:
-    - Removes VLAN tag and forwards:
-      - With 802.1Q header (including tag) on trunk interfaces.
-      - Without header if VLAN ID matches that of the received frame on access interfaces.
+
+**Switch Behavior:**
+
+- If on an access port:
+  - Forwards with 802.1Q header on trunk interfaces.
+  - Forwards without header if VLAN ID matches that of the incoming interface.
+- If on a trunk port:
+  - Removes VLAN tag and forwards:
+    - With 802.1Q header (including tag) on trunk interfaces.
+    - Without header if VLAN ID matches that of the received frame on access interfaces.
 
 1. **Linux VLAN Filtering:** TPID value of 0x8200 is used instead of 0x8100. PCP and DEI are set to 0.
 2. **Trunk Links:** Links between switches operate in trunk mode, allowing passage of all VLANs.
@@ -47,13 +49,13 @@ VLANs (Virtual Local Area Networks) segment a single physical LAN into multiple 
 
 ## STP (Spanning Tree Protocol)
 
-STP is a protocol used to prevent loops in network topologies by creating a loop-free logical topology. This implementation provides a simplified version of STP to avoid network loops.
+STP is a protocol used to prevent loops in network topologies by creating a loop-free logical topology. This implementation provides a simplified version of STP to avoid LAN loops.
 
 - Each switch initially considers itself as the root bridge and starts with all ports in the Listening state.
 - BPDUs are exchanged between switches to elect the root bridge and determine the designated ports.
 - Trunk ports are crucial for loop prevention, and STP operates only on these ports to avoid potential loops.
 
-### Simplified Algorithm
+### STP Forwarding Process
 
 - **Initialization:** Trunk ports start in the Blocking state to prevent loops. Switches consider themselves as root bridges, with all ports in the Listening state. If a switch believes it's the root bridge, it sets all ports to the Designated Port state.
 - **BPDU Exchange:** Switches exchange BPDUs to elect the root bridge and determine designated ports. BPDUs contain root bridge ID, sender bridge ID, and root path cost, sent regularly on trunk ports.
