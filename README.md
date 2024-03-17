@@ -9,7 +9,7 @@ Ethernet switch that uses **VLAN segmentation** for network efficiency, **Spanni
 ## Frame Forwarding Process
 
 - **Frame Arrival:** An Ethernet frame arrives at a switch through one of its ports.
-- **Destination MAC Address Lookup:** The switch examines the destination MAC address (dst) in the Ethernet header.
+- **Destination MAC Address Lookup:** The switch examines the destination MAC address (dst) in the header.
 - **MAC Address Table Lookup:** The switch checks its MAC address table to find the port associated with the destination MAC address. If found, the frame is forwarded out of the corresponding port.
 - **Unknown Destination MAC Address Handling:** If the MAC address is unknown, the switch floods the frame to all ports except the incoming one to ensure connectivity.
 - **Broadcast and Multicast Forwarding:**
@@ -40,7 +40,9 @@ VLANs (Virtual Local Area Networks) segment a single physical LAN into multiple 
       - Without header if VLAN ID matches that of the received frame on access interfaces.
 
 **Linux VLAN Filtering:** To preserve VLAN tags, TPID value of 0x8200 is used instead of 0x8100. PCP and DEI are set to 0.
+
 **Trunk Links:** Links between switches operate in trunk mode, allowing passage of all VLANs. The native VLAN is irrelevant.
+
 **Configuration:** VLANs and trunk configurations are set via a configuration file specified in the API section.
 
 <p align="center">
@@ -57,17 +59,10 @@ STP is a protocol used to prevent loops in network topologies by creating a loop
 
 ### Simplified Algorithm
 
-- **Initialization:**
-  - Trunk ports start in the Blocking state to prevent loops. Switches consider themselves as root bridges, with all ports in the Listening state.
-  - If a switch believes it's the root bridge, it sets all ports to the Designated Port state.
-- **BPDU Exchange:** Switches exchange BPDUs to elect the root bridge and determine designated ports. BPDUs contain root bridge ID, sender bridge ID, and root path cost. BPDUs are regularly sent on trunk ports.
+- **Initialization:** Trunk ports start in the Blocking state to prevent loops. Switches consider themselves as root bridges, with all ports in the Listening state. If a switch believes it's the root bridge, it sets all ports to the Designated Port state.
+- **BPDU Exchange:** Switches exchange BPDUs to elect the root bridge and determine designated ports. BPDUs contain root bridge ID, sender bridge ID, and root path cost, sent regularly on trunk ports.
 - **Root Bridge Election:** Upon receiving a BPDU, switches compare root bridge IDs. If received ID is lower, the switch updates its information and forwards the BPDU. Switches continuously update root bridge information.
-- **Port States:**
-  - Ports can be Blocking, Listening, Learning, or Forwarding.
-  - Blocking: Disabled to prevent loops.
-  - Listening: Open for BPDUs, preparing for Learning state.
-  - Learning: Populate MAC address tables but don't forward user data.
-  - Forwarding: Fully operational, forward user data.
+- **Port States:** Ports can be Blocking, Listening, Learning, or Forwarding. Blocking prevents loops, Listening prepares for Learning state, Learning populates MAC address tables, and Forwarding fully operates, forwarding user data.
 - **Loop Prevention:** STP operates on trunk ports to prevent loops. BPDUs determine best paths to root bridge and block redundant links.
 - **Frame Forwarding:** Switches forward frames based on established spanning tree topology, ensuring a loop-free network.
 
