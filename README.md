@@ -9,7 +9,7 @@ Ethernet `Switch` that uses **VLAN segmentation** for network efficiency, **Span
 ## Frame Forwarding Process
 
 - **Frame Arrival:** An Ethernet frame arrives at a switch through one of its ports.
-- **Destination MAC Address:** The switch examines the destination MAC address (dst) in the header frame.
+- **Destination MAC Address:** The switch examines the destination MAC address in the header frame.
 - **MAC Address Table Lookup:** The switch checks its MAC address table to find the port associated with the destination MAC address. If found, the frame is forwarded out of the corresponding port.
 - **Unknown Destination MAC Address:** If the MAC address is unknown, the switch floods the frame to all ports except the incoming one to ensure connectivity.
 - **Broadcast and Multicast:**
@@ -57,8 +57,7 @@ Ethernet `Switch` that uses **VLAN segmentation** for network efficiency, **Span
 
 ### Structure of BPDU Frames
 
-`BPDU frames` utilize encapsulation with the `802.2 Logical Link Control (LLC) header`. The following article briefly outlines their structure:
-The `Bridge Protocol Data Units (BPDUs)` utilize the encapsulation of the 802.2 Logical Link Control (LLC) header. The structure of a BPDU is as follows:
+`BPDU frames` utilize encapsulation with the `802.2 Logical Link Control (LLC) header`. The `Bridge Protocol Data Units (BPDUs)` utilize the encapsulation of the 802.2 Logical Link Control (LLC) header. The structure of a BPDU is as follows:
 
 -------------------------------------------------
 
@@ -76,7 +75,7 @@ The `Bridge Protocol Data Units (BPDUs)` utilize the encapsulation of the 802.2 
 
 ### STP Forwarding Process
 
-- **Initialization:** `Trunk ports` start in the `Blocking state` to prevent loops. Switches consider themselves as `root bridges`, with all ports in the `Listening state`. If a switch it's the `root bridge`, it sets all ports to the `Designated state`.
+- **Initialization:** `Trunk ports` start in the `Blocking state` to prevent loops. Switches consider themselves as `root bridges`, with all ports in the `Listening state`. If a switch it's the `root bridge`, all ports are `Designated`.
 - **BPDU Exchange:** Switches exchange `BPDUs` to elect the `root bridge` and determine designated ports. `BPDUs` contain **root bridge ID**, **sender bridge ID**, and **root path cost**, sent regularly on **trunk ports**.
 - **Root Bridge Election:** Upon receiving a `BPDU`, switches compare `root bridge IDs`. If received **ID is lower**, the switch **updates** its information and **forwards** the BPDU.
   - Switches **continuously update root bridge** information.
@@ -85,7 +84,9 @@ The `Bridge Protocol Data Units (BPDUs)` utilize the encapsulation of the 802.2 
   - `Listening` prepares for Learning state,
   - `Learning populates` MAC address tables, and
   - `Forwarding` fully operates.
-- **Loop Prevention:** STP operates on trunk ports to prevent loops. `BPDUs` determine best paths to **root bridge and block redundant links**.
+- **Loop Prevention:** STP operates on trunk ports to prevent loops. `BPDUs` determine best paths to:
+  - **root bridge**
+  - **block redundant links**
 - **Frame Forwarding:** Forward frames based on established spanning tree topology, ensuring a loop-free network.
 
 ## Usage
