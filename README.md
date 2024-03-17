@@ -76,10 +76,15 @@ The `Bridge Protocol Data Units (BPDUs)` utilize the encapsulation of the 802.2 
 
 ### STP Forwarding Process
 
-- **Initialization:** `Trunk ports` start in the `Blocking state` to prevent loops. Switches consider themselves as `root bridges`, with all ports in the `Listening state`. If a switch believes it's the `root bridge`, it sets all ports to the `Designated` Port `state`.
+- **Initialization:** `Trunk ports` start in the `Blocking state` to prevent loops. Switches consider themselves as `root bridges`, with all ports in the `Listening state`. If a switch it's the `root bridge`, it sets all ports to the `Designated state`.
 - **BPDU Exchange:** Switches exchange `BPDUs` to elect the `root bridge` and determine designated ports. `BPDUs` contain **root bridge ID**, **sender bridge ID**, and **root path cost**, sent regularly on **trunk ports**.
-- **Root Bridge Election:** Upon receiving a `BPDU`, switches compare `root bridge IDs`. If received **ID is lower**, the switch **updates** its information and **forwards** the BPDU. Switches **continuously update root bridge** information.
-- **Port States:** Ports can be `Blocking`, `Listening`, `Learning`, or `Forwarding`. `Blocking` prevents loops, `Listening` prepares for Learning state, `Learning populates` MAC address tables, and `Forwarding` fully operates.
+- **Root Bridge Election:** Upon receiving a `BPDU`, switches compare `root bridge IDs`. If received **ID is lower**, the switch **updates** its information and **forwards** the BPDU.
+  - Switches **continuously update root bridge** information.
+- **Port States:** Ports can be `Blocking`, `Listening`, `Learning`, or `Forwarding`.
+  - `Blocking` prevents loops,
+  - `Listening` prepares for Learning state,
+  - `Learning populates` MAC address tables, and
+  - `Forwarding` fully operates.
 - **Loop Prevention:** STP operates on trunk ports to prevent loops. `BPDUs` determine best paths to **root bridge and block redundant links**.
 - **Frame Forwarding:** Forward frames based on established spanning tree topology, ensuring a loop-free network.
 
