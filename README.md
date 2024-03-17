@@ -20,9 +20,9 @@ If found, the frame is forwarded out of the corresponding port.
 If the MAC address is unknown, the switch floods the frame to all ports except the incoming one to ensure connectivity.
 
 **Broadcast and Multicast Forwarding:**
-`Broadcast` frames are forwarded to all ports except the receiving one, ensuring all devices receive the broadcast.
 
-`Multicast` frames are forwarded only to ports interested in the multicast group.
+- Broadcast frames are forwarded to all ports except the receiving one, ensuring all devices receive the broadcast.
+- Multicast frames are forwarded only to ports interested in the multicast group.
   
 **VLAN Considerations:**
 Frames are forwarded only within the VLAN to which they belong, respecting VLAN membership.
@@ -34,11 +34,7 @@ VLAN tagging enables logical separation of VLANs over the same physical infrastr
 
 ## VLAN
 
-VLANs (Virtual Local Area Networks), segment a single physical LAN into multiple broadcast domains, to work correctly it introduces the concept of VLAN tagging and forwards frames based on VLAN membership, facilitating efficient network segmentation and traffic management.
-
-- Frames **received** on `access` ports are forwarded only to the **destination port** with the same `VLAN ID`.
-- Frames **received** on `trunk` ports are forwarded based on **VLAN tags**. If the `VLAN ID` *matches* the **port's VLAN** configuration, the frame is `forwarded`; otherwise, it is `dropped`.
-- `VLAN tagging` is performed according to the `IEEE 802.1Q standard`, with L**inux-style VLAN filtering**.
+VLANs (Virtual Local Area Networks) segment a single physical LAN into multiple broadcast domains. This implementation introduces VLAN tagging and forwards frames based on VLAN membership, facilitating efficient network segmentation and traffic management.
 
 ### VLAN Forwarding Process
 
@@ -50,7 +46,7 @@ VLAN tagging is introduced using IEEE 802.1Q, adding 4 bytes to the frame. The V
 
 ![TAG_FORMAT](./images/tag_format.png)
 
-**Switch Behavior:** (On receiving a frame)
+**Switch Behavior:**
 
 - If on an access port:
   - Forwards with 802.1Q header on trunk interfaces.
@@ -69,19 +65,9 @@ Links between switches operate in trunk mode, allowing passage of all VLANs. The
 **Configuration:**
 VLANs and trunk configurations are set via a configuration file specified in the API section.
 
-### BPDU Structure and Transmission
+## STP (Spanning Tree Protocol)
 
-Bridge Protocol Data Units (BPDUs) are special frames exchanged between switches to implement STP. BPDUs contain crucial information for electing the root bridge and determining designated ports.
-
-- BPDUs are identified by the multicast destination MAC address 01:80:C2:00:00:00.
-- The BPDU structure includes fields such as root bridge ID, sender bridge ID, root path cost, message age, max age, hello time, and forward delay.
-- BPDUs are encapsulated within the Logical Link Control (LLC) header, which includes the DSAP (Destination Service Access Point), SSAP (Source Service Access Point), and Control fields.
-
-STP ensures a stable and loop-free network topology by dynamically adjusting port states and blocking redundant links based on the information exchanged through BPDUs.
-
-## STP
-
-STP (Spanning Tree Protocol) is a protocol used to prevent loops in network topologies by creating a loop-free logical topology. This implementation provides a simplified version of STP to avoid network loops.
+STP is a protocol used to prevent loops in network topologies by creating a loop-free logical topology. This implementation provides a simplified version of STP to avoid network loops.
 
 - Each switch initially considers itself as the root bridge and starts with all ports in the Listening state.
 - BPDUs (Bridge Protocol Data Units) are exchanged between switches to elect the root bridge and determine the designated ports.
@@ -91,8 +77,8 @@ STP (Spanning Tree Protocol) is a protocol used to prevent loops in network topo
 
 **Initialization:**
 Trunk ports start in the Blocking state to prevent loops.
-Switches consider themselves as root bridges, with all ports in the **Listening** state.
-If a switch believes it's the root bridge, it sets all ports to the **Designated** Port state.
+Switches consider themselves as root bridges, with all ports in the Listening state.
+If a switch believes it's the root bridge, it sets all ports to the Designated Port state.
 
 **BPDU Exchange:**
 Switches exchange BPDUs to elect the root bridge and determine designated ports.
@@ -106,11 +92,11 @@ Switches continuously update root bridge information.
 
 **Port States:**
 
-- Ports can be `Blocking`, `Listening`, `Learning`, or `Forwarding`.
-- `Blocking`: Disabled to prevent loops.
-- `Listening`: Open for BPDUs, preparing for **Learning** state.
-- `Learning`: Populate MAC address tables but don't forward user data.
-- `Forwarding`: Fully operational, forward user data.
+- Ports can be Blocking, Listening, Learning, or Forwarding.
+- Blocking: Disabled to prevent loops.
+- Listening: Open for BPDUs, preparing for Learning state.
+- Learning: Populate MAC address tables but don't forward user data.
+- Forwarding: Fully operational, forward user data.
 
 **Loop Prevention:**
 STP operates on trunk ports to prevent loops.
