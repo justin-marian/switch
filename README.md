@@ -13,10 +13,8 @@ Ethernet switch that uses **VLAN segmentation** for network efficiency, **Spanni
 - **MAC Address Table Lookup:** The switch checks its MAC address table to find the port associated with the destination MAC address. If found, the frame is forwarded out of the corresponding port.
 - **Unknown Destination MAC Address Handling:** If the MAC address is unknown, the switch floods the frame to all ports except the incoming one to ensure connectivity.
 - **Broadcast and Multicast Forwarding:**
-  - Broadcast frames are forwarded to all ports except the receiving one, all devices receive the broadcast.
-  - Multicast frames are forwarded only to ports interested in the multicast group.
-- **VLAN Considerations:** Frames are forwarded only within the VLAN to which they belong, respecting VLAN membership. Trunk ports carry traffic from multiple VLANs over a single link, using VLAN tagging for differentiation.
-- **VLAN Tagging on Trunk Ports:** Trunk ports append VLAN tags to frames, identifying their VLAN membership. VLAN tagging enables logical separation of VLANs over the same physical infrastructure.
+  - `Broadcast` frames are forwarded to **all** ports except the receiving one, all devices receive the broadcast.
+  - `Multicast` frames are forwarded **only** to ports interested in the multicast group.
 
 ## VLAN
 
@@ -39,11 +37,9 @@ VLANs (Virtual Local Area Networks) segment a single physical LAN into multiple 
       - With 802.1Q header (including tag) on trunk interfaces.
       - Without header if VLAN ID matches that of the received frame on access interfaces.
 
-**Linux VLAN Filtering:** To preserve VLAN tags, TPID value of 0x8200 is used instead of 0x8100. PCP and DEI are set to 0.
-
-**Trunk Links:** Links between switches operate in trunk mode, allowing passage of all VLANs. The native VLAN is irrelevant.
-
-**Configuration:** VLANs and trunk configurations are set via a configuration file specified in the API section.
+1. **Linux VLAN Filtering:** TPID value of 0x8200 is used instead of 0x8100. PCP and DEI are set to 0.
+2. **Trunk Links:** Links between switches operate in trunk mode, allowing passage of all VLANs.
+3. **Configuration:** VLANs and trunk configurations are set via a configuration file specified in the API section.
 
 <p align="center">
     <img src="./images/tag_format.png" alt="TAG" width="50%">
@@ -54,7 +50,7 @@ VLANs (Virtual Local Area Networks) segment a single physical LAN into multiple 
 STP is a protocol used to prevent loops in network topologies by creating a loop-free logical topology. This implementation provides a simplified version of STP to avoid network loops.
 
 - Each switch initially considers itself as the root bridge and starts with all ports in the Listening state.
-- BPDUs (Bridge Protocol Data Units) are exchanged between switches to elect the root bridge and determine the designated ports.
+- BPDUs are exchanged between switches to elect the root bridge and determine the designated ports.
 - Trunk ports are crucial for loop prevention, and STP operates only on these ports to avoid potential loops.
 
 ### Simplified Algorithm
@@ -62,8 +58,8 @@ STP is a protocol used to prevent loops in network topologies by creating a loop
 - **Initialization:** Trunk ports start in the Blocking state to prevent loops. Switches consider themselves as root bridges, with all ports in the Listening state. If a switch believes it's the root bridge, it sets all ports to the Designated Port state.
 - **BPDU Exchange:** Switches exchange BPDUs to elect the root bridge and determine designated ports. BPDUs contain root bridge ID, sender bridge ID, and root path cost, sent regularly on trunk ports.
 - **Root Bridge Election:** Upon receiving a BPDU, switches compare root bridge IDs. If received ID is lower, the switch updates its information and forwards the BPDU. Switches continuously update root bridge information.
-- **Port States:** Ports can be Blocking, Listening, Learning, or Forwarding. Blocking prevents loops, Listening prepares for Learning state, Learning populates MAC address tables, and Forwarding fully operates, forwarding user data.
-- **Loop Prevention:** STP operates on trunk ports to prevent loops. BPDUs determine best paths to root bridge and block redundant links.
+- **Port States:** Ports can be Blocking, Listening, Learning, or Forwarding. Blocking prevents loops, Listening prepares for Learning state, Learning populates MAC address tables, and Forwarding fully operates.
+- **Loop Prevention:** STP operates on trunk ports to prevent loops. BPDUs (Bridge Protocol Data Units) determine best paths to root bridge and block redundant links.
 - **Frame Forwarding:** Switches forward frames based on established spanning tree topology, ensuring a loop-free network.
 
 ## Usage
